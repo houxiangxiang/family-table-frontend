@@ -33,7 +33,7 @@ function App() {
       {loading && <LoadingSpinner />}
 
       {menu && !loading && (
-        <WeeklyMenuDisplay weekMenu={menu.weekMenu} />
+        <WeeklyMenuDisplay weekMenu={menu.response.weekly_menu} />
       )}
     </div>
   )

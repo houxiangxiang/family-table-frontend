@@ -1,17 +1,25 @@
 export interface FormData {
   adults: number
   children: number
-  cuisine: string
-  dietaryRestrictions?: string
+  cuisine: string[]
+  dietaryRestrictions: string[]
+}
+
+export interface Ingredient {
+  ingredient: string
+  quantity: string
 }
 
 export interface DayMenu {
   day: string
-  breakfast: string
-  lunch: string
-  dinner: string
+  dish: string
+  cuisine: string
+  description: string
+  ingredients: Ingredient[]
 }
 
 export interface WeekMenuResponse {
-  weekMenu: DayMenu[]
+  response: {
+    weekly_menu: DayMenu[]
+  }
 }
