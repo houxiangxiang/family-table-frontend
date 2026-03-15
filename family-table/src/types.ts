@@ -10,12 +10,21 @@ export interface Ingredient {
   quantity: string
 }
 
+export interface Nutrition {
+  calories: number
+  protein: string
+  carbs: string
+  fat: string
+}
+
 export interface DayMenu {
   day: string
   dish: string
   cuisine: string
   description: string
   ingredients: Ingredient[]
+  nutrition: Nutrition
+  image?: string
 }
 
 export interface WeekMenuResponse {

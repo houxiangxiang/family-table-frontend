@@ -1,41 +1,41 @@
-import { useState, useMemo } from "react"
-import type { DayMenu } from "../types"
+import { useState, useMemo } from "react";
+import type { DayMenu } from "../types";
 
 interface Props {
-  weekMenu: DayMenu[]
-  onRegenerate?: () => void
-  loading?: boolean
+  weekMenu: DayMenu[];
+  onRegenerate?: () => void;
+  loading?: boolean;
 }
 
 export default function WeeklyMenuDisplay({
   weekMenu,
   onRegenerate,
-  loading = false
+  loading = false,
 }: Props) {
-  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const selectedDay = weekMenu[selectedIndex]
+  const selectedDay = weekMenu[selectedIndex];
 
   /**
    * Merge ingredients into a weekly shopping list
    */
   const shoppingList = useMemo(() => {
-    const map = new Map<string, string[]>()
+    const map = new Map<string, string[]>();
 
-    weekMenu.forEach(day => {
-      day.ingredients.forEach(ing => {
+    weekMenu.forEach((day) => {
+      day.ingredients.forEach((ing) => {
         if (!map.has(ing.ingredient)) {
-          map.set(ing.ingredient, [])
+          map.set(ing.ingredient, []);
         }
-        map.get(ing.ingredient)!.push(ing.quantity)
-      })
-    })
+        map.get(ing.ingredient)!.push(ing.quantity);
+      });
+    });
 
     return Array.from(map.entries()).map(([name, qty]) => ({
       ingredient: name,
-      quantity: qty.join(" + ")
-    }))
-  }, [weekMenu])
+      quantity: qty.join(" + "),
+    }));
+  }, [weekMenu]);
 
   if (loading) {
     return (
@@ -44,24 +44,13 @@ export default function WeeklyMenuDisplay({
         <div className="h-4 bg-gray-200 w-2/3 mb-2"></div>
         <div className="h-4 bg-gray-200 w-1/2"></div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="mt-8 space-y-6">
 
-      {/* Regenerate button */}
-      <div className="flex justify-end">
-        <button
-          onClick={onRegenerate}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Regenerate Menu
-        </button>
-      </div>
-
       <div className="flex border rounded shadow-sm overflow-hidden">
-
         {/* Left Sidebar */}
         <div className="w-48 bg-gray-50 border-r">
           {weekMenu.map((day, index) => (
@@ -79,10 +68,17 @@ export default function WeeklyMenuDisplay({
 
         {/* Day Menu */}
         <div className="flex-1 p-6">
-
           {selectedDay && (
             <>
               <h2 className="text-xl font-bold mb-2">{selectedDay.day}</h2>
+
+              {selectedDay.image && (
+                <img
+                  src={selectedDay.image}
+                  alt={selectedDay.dish}
+                  className="w-full max-w-md rounded-lg shadow mb-4"
+                />
+              )}
 
               <p className="text-lg font-semibold">{selectedDay.dish}</p>
 
@@ -93,9 +89,30 @@ export default function WeeklyMenuDisplay({
                 </span>
               </div>
 
-              <p className="text-gray-700">
-                {selectedDay.description}
-              </p>
+              <p className="text-gray-700">{selectedDay.description}</p>
+
+              {/* Nutrition */}
+              <div className="mt-4">
+                <strong>Nutrition</strong>
+
+                <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
+                  <div className="border p-2 rounded bg-gray-50">
+                    Calories: {selectedDay.nutrition.calories} kcal
+                  </div>
+
+                  <div className="border p-2 rounded bg-gray-50">
+                    Protein: {selectedDay.nutrition.protein}
+                  </div>
+
+                  <div className="border p-2 rounded bg-gray-50">
+                    Carbs: {selectedDay.nutrition.carbs}
+                  </div>
+
+                  <div className="border p-2 rounded bg-gray-50">
+                    Fat: {selectedDay.nutrition.fat}
+                  </div>
+                </div>
+              </div>
 
               <div className="mt-4">
                 <strong>Ingredients</strong>
@@ -109,28 +126,21 @@ export default function WeeklyMenuDisplay({
               </div>
             </>
           )}
-
         </div>
       </div>
 
       {/* Weekly Shopping List */}
       <div className="p-6 border rounded shadow-sm">
-        <h2 className="text-xl font-bold mb-3">
-          Weekly Shopping List
-        </h2>
+        <h2 className="text-xl font-bold mb-3">Weekly Shopping List</h2>
 
         <ul className="grid grid-cols-2 gap-2">
           {shoppingList.map((item, idx) => (
-            <li
-              key={idx}
-              className="border p-2 rounded bg-gray-50"
-            >
+            <li key={idx} className="border p-2 rounded bg-gray-50">
               {item.ingredient} — {item.quantity}
             </li>
           ))}
         </ul>
       </div>
-
     </div>
-  )
+  );
 }
