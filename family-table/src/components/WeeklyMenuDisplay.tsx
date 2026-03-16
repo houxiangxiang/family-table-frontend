@@ -3,21 +3,26 @@ import type { DayMenu } from "../types";
 
 interface Props {
   weekMenu: DayMenu[];
-  onRegenerate?: () => void;
   loading?: boolean;
 }
 
 export default function WeeklyMenuDisplay({
   weekMenu,
-  onRegenerate,
   loading = false,
 }: Props) {
+
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [showRecipe, setShowRecipe] = useState(false);
+
+  const handleSelectDay = (index: number) => {
+    setSelectedIndex(index);
+    setShowRecipe(false);
+  };
 
   const selectedDay = weekMenu[selectedIndex];
 
   /**
-   * Merge ingredients into a weekly shopping list
+   * Merge ingredients into weekly shopping list
    */
   const shoppingList = useMemo(() => {
     const map = new Map<string, string[]>();
@@ -50,15 +55,18 @@ export default function WeeklyMenuDisplay({
   return (
     <div className="mt-8 space-y-6">
 
-      <div className="flex border rounded shadow-sm overflow-hidden">
-        {/* Left Sidebar */}
+      {/* Main Card */}
+      <div className="flex border rounded-xl shadow-md overflow-hidden">
+
+        {/* Sidebar */}
         <div className="w-48 bg-gray-50 border-r">
           {weekMenu.map((day, index) => (
             <button
               key={day.day}
-              onClick={() => setSelectedIndex(index)}
-              className={`block w-full text-left px-4 py-3 border-b hover:bg-gray-100
-                ${index === selectedIndex ? "bg-white font-bold" : ""}
+              onClick={() => handleSelectDay(index)}
+              className={`block w-full text-left px-4 py-3 border-b transition
+                hover:bg-gray-100
+                ${index === selectedIndex ? "bg-white font-semibold" : ""}
               `}
             >
               {day.day}
@@ -66,25 +74,26 @@ export default function WeeklyMenuDisplay({
           ))}
         </div>
 
-        {/* Day Menu */}
+        {/* Day Detail */}
         <div className="flex-1 p-6">
+
           {selectedDay && (
             <>
-              <h2 className="text-xl font-bold mb-2">{selectedDay.day}</h2>
+              <h2 className="text-2xl font-bold mb-2">{selectedDay.day}</h2>
 
               {selectedDay.image && (
                 <img
                   src={selectedDay.image}
                   alt={selectedDay.dish}
-                  className="w-full max-w-md rounded-lg shadow mb-4"
+                  className="w-full max-w-lg rounded-xl shadow mb-4"
                 />
               )}
 
-              <p className="text-lg font-semibold">{selectedDay.dish}</p>
+              <p className="text-xl font-semibold">{selectedDay.dish}</p>
 
-              {/* Cuisine Tag */}
+              {/* Cuisine Badge */}
               <div className="mt-1 mb-3">
-                <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
+                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
                   {selectedDay.cuisine}
                 </span>
               </div>
@@ -92,53 +101,94 @@ export default function WeeklyMenuDisplay({
               <p className="text-gray-700">{selectedDay.description}</p>
 
               {/* Nutrition */}
-              <div className="mt-4">
-                <strong>Nutrition</strong>
+              <div className="mt-5">
+                <strong className="text-lg">Nutrition</strong>
 
-                <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
-                  <div className="border p-2 rounded bg-gray-50">
-                    Calories: {selectedDay.nutrition.calories} kcal
+                <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
+
+                  <div className="border p-3 rounded-lg bg-gray-50">
+                    🔥 Calories: {selectedDay.nutrition.calories} kcal
                   </div>
 
-                  <div className="border p-2 rounded bg-gray-50">
-                    Protein: {selectedDay.nutrition.protein}
+                  <div className="border p-3 rounded-lg bg-gray-50">
+                    💪 Protein: {selectedDay.nutrition.protein}
                   </div>
 
-                  <div className="border p-2 rounded bg-gray-50">
-                    Carbs: {selectedDay.nutrition.carbs}
+                  <div className="border p-3 rounded-lg bg-gray-50">
+                    🍞 Carbs: {selectedDay.nutrition.carbs}
                   </div>
 
-                  <div className="border p-2 rounded bg-gray-50">
-                    Fat: {selectedDay.nutrition.fat}
+                  <div className="border p-3 rounded-lg bg-gray-50">
+                    🥑 Fat: {selectedDay.nutrition.fat}
                   </div>
+
                 </div>
               </div>
 
-              <div className="mt-4">
-                <strong>Ingredients</strong>
-                <ul className="list-disc list-inside mt-2">
+              {/* Ingredients */}
+              <div className="mt-5">
+                <strong className="text-lg">Ingredients</strong>
+
+                <ul className="list-disc list-inside mt-2 space-y-1">
                   {selectedDay.ingredients.map((ing, idx) => (
                     <li key={idx}>
-                      {ing.ingredient} - {ing.quantity}
+                      {ing.ingredient} — {ing.quantity}
                     </li>
                   ))}
                 </ul>
               </div>
+
+              {/* Recipe Toggle */}
+              {selectedDay.recipe && (
+                <div className="mt-6">
+
+                  <button
+                    onClick={() => setShowRecipe(!showRecipe)}
+                    className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
+                  >
+                    {showRecipe ? "Hide Recipe ▲" : "View Recipe ▼"}
+                  </button>
+
+                  {showRecipe && (
+                    <div className="mt-4 p-4 border rounded-lg bg-gray-50">
+
+                      <strong className="text-lg">Recipe</strong>
+
+                      <ol className="list-decimal list-inside mt-2 space-y-2">
+                        {selectedDay.recipe.map((step, idx) => (
+                          <li key={idx}>{step}</li>
+                        ))}
+                      </ol>
+
+                    </div>
+                  )}
+
+                </div>
+              )}
+
             </>
           )}
         </div>
       </div>
 
       {/* Weekly Shopping List */}
-      <div className="p-6 border rounded shadow-sm">
-        <h2 className="text-xl font-bold mb-3">Weekly Shopping List</h2>
+      <div className="p-6 border rounded-xl shadow-sm">
 
-        <ul className="grid grid-cols-2 gap-2">
+        <h2 className="text-xl font-bold mb-3">
+          🛒 Weekly Shopping List
+        </h2>
+
+        <ul className="grid grid-cols-2 gap-3">
+
           {shoppingList.map((item, idx) => (
-            <li key={idx} className="border p-2 rounded bg-gray-50">
+            <li
+              key={idx}
+              className="border p-3 rounded-lg bg-gray-50"
+            >
               {item.ingredient} — {item.quantity}
             </li>
           ))}
+
         </ul>
       </div>
     </div>

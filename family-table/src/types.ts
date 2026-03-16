@@ -25,6 +25,7 @@ export interface DayMenu {
   ingredients: Ingredient[]
   nutrition: Nutrition
   image?: string
+  recipe: string[]
 }
 
 export interface WeekMenuResponse {
