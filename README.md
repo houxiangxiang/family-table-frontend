@@ -8,7 +8,7 @@ This project demonstrates **serverless architecture** with AWS Lambda + Bedrock/
 
 ## Demo
 
-![Family Table Screenshot](images/family_table.png)  
+![Family Table Screenshot](https://github.com/houxiangxiang/family-table-frontend/blob/main/family-table/images/family_table.png)  
 
 You can see AI-generated weekly menus, ingredients, nutrition info, and expandable recipes. Each dish also has a generated image.
 
