@@ -1,73 +1,58 @@
-# React + TypeScript + Vite
+# Family Table
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Family Table** is an AI-powered web application that generates a **personalized weekly dinner plan** for families, including ingredients, nutrition info, recipes, and AI-generated food images.
 
-Currently, two official plugins are available:
+This project demonstrates **serverless architecture** with AWS Lambda + Bedrock/Nova models and a React frontend.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Demo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+![Family Table Screenshot](images/family_table.png)  
 
-## Expanding the ESLint configuration
+You can see AI-generated weekly menus, ingredients, nutrition info, and expandable recipes. Each dish also has a generated image.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Input family info:
+  - Number of adults & children
+  - Preferred cuisines
+  - Dietary restrictions
+- Generate a full **weekly dinner plan** (Monday–Sunday)
+- For each dish:
+  - Name, cuisine, description
+  - Ingredients with quantities
+  - Nutrition info
+  - Step-by-step recipe
+  - AI-generated image
+- Weekly shopping list (merged ingredients)
+- Click to expand recipes in frontend
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Frontend**: React + TypeScript + Tailwind CSS
+- **Backend**: AWS Lambda (Python)
+- **AI Models**: Amazon Bedrock
+  - `Claude Haiku` for menu generation
+  - `Nova Canvas` for food image generation
+- **Storage**: AWS S3 for images
+- **API Gateway**: Lambda HTTP API
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+## Architecture
+
+```mermaid
+graph TD
+  User[User] -->|Submit household info| Frontend[React App]
+  Frontend -->|HTTP POST| API[API Gateway]
+  API --> Lambda[Lambda Function]
+  Lambda --> BedrockMenu[Claude Haiku]
+  Lambda --> BedrockImage[Nova Canvas]
+  BedrockImage --> S3[S3 Bucket]
+  Lambda -->|Return JSON + image URLs| Frontend
+  Frontend -->|Render menu, nutrition, recipes, shopping list| User
